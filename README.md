@@ -1,8 +1,8 @@
 # Title
 
-Hello world!
+*This software is licensed under the BSD 3-Clause License.*
 
-- Lorem
-- Ipsum
-- Dolor
-    - sit amet
+## TODO
+- JSON output
+- XML output
+- Meow hiss scratch scratch hiss
