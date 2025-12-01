@@ -7,6 +7,9 @@ Version: 1.0.0-dev
 Usage: python main.py ### Add usage instructions here later ###
 """
 
+# Setup --------------------------------------------------------------
+
+
 import argparse
 import json
 import platform
@@ -15,6 +18,46 @@ import sys
 
 
 VERSION = "1.0.0-dev"
+
+# Defs --------------------------------------------------------------
+
+
+def debug_mode(args):
+    print("Debug mode is enabled.")
+    print(f"Arguments: {args}")
+    print(f"Format: {args.format}")
+    print(f"Output file: {args.output}")
+    print(f"Version: {VERSION}")
+
+def get_device_info():
+    # gets basic device information
+    device_info = {
+        "device_name": platform.node(),
+        "os_version": platform.system() + " " + platform.release() + " " + platform.version(),
+        "ip_address": socket.gethostbyname(socket.gethostname())
+    }
+    return device_info
+
+def export_to_json(data, output_file):
+    try:
+        with open(output_file, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+        print(f"Data exported to {output_file} successfully.")
+    except Exception as e:
+        print(f"Failed to export data to {output_file}: {e}")
+
+def export_to_xml(data, output_file):
+    try:
+        with open(output_file, 'w') as xml_file:
+            xml_file.write('<device_info>\n')
+            for key, value in data.items():
+                xml_file.write(f'    <{key}>{value}</{key}>\n')
+            xml_file.write('</device_info>\n')
+        print(f"Data exported to {output_file} successfully.")
+    except Exception as e:
+        print(f"Failed to export data to {output_file}: {e}")
+
+# Main function --------------------------------------------------------------
 
 
 def main():
@@ -55,23 +98,8 @@ def main():
 
     print("Getting device information...")
 
-def debug_mode(args):
-    print("Debug mode is enabled.")
-    print(f"Arguments: {args}")
-    print(f"Format: {args.format}")
-    print(f"Output file: {args.output}")
-    print(f"Version: {VERSION}")
+# Run and Handle Exceptions --------------------------------------------------------------
 
-    # add logic to get device information (os apis? cli calls?) and export to specified format (simple, or at least should be...)
-
-def get_device_info():
-    # gets basic device information
-    device_info = {
-        "device_name": platform.node(),
-        "os_version": platform.system() + " " + platform.release() + " " + platform.version(),
-        "ip_address": socket.gethostbyname(socket.gethostname())
-    }
-    return device_info
 
 if __name__ == "__main__":
     try:
