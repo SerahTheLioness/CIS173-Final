@@ -3,7 +3,7 @@
 Program designed to get information about a device via CLI and export it to a JSON file.
 Author: Serah Camacho
 License: BSD-3-Clause (see LICENSE file for details)
-Version: 1.0.0-dev
+Version: 1.0.1-dev
 Usage: python main.py ### Add usage instructions here later ###
 """
 
@@ -13,11 +13,14 @@ Usage: python main.py ### Add usage instructions here later ###
 import argparse
 import json
 import platform
+import shutil
 import socket
 import sys
+import time
 
 
-VERSION = "1.0.0-dev"
+
+VERSION = "1.0.1-dev"
 
 # Defs --------------------------------------------------------------
 
@@ -55,6 +58,14 @@ def get_args():
         action="store_true",
         help="Enable debug mode."
     )
+
+    parser.add_argument(
+        "-x", "--extra",
+        help="Extra information to include in the output.",
+        action="store_true",
+        default=False
+    )
+
     parser.add_argument(
         "positional_output",
         nargs="?",
@@ -80,10 +91,34 @@ def debug_mode(args):
 def get_device_info():
     # gets basic device information
     device_info = {
+        "timestamp_local": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+        "timestamp_utc": time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()),
         "device_name": platform.node(),
         "os_version": platform.system() + " " + platform.release() + " " + platform.version(),
         "ip_address": socket.gethostbyname(socket.gethostname())
     }
+    return device_info
+
+def get_device_info_extended():
+    # gets extended device information
+    device_info = get_device_info()
+
+    if "Windows" in device_info["os_version"]:
+        usage = shutil.disk_usage("C:\\")
+    else:
+        usage = shutil.disk_usage("/")
+    
+
+    device_info.update({
+        "total_disk_space": usage.total,
+        "used_disk_space": usage.used,
+        "free_disk_space": usage.free,
+        "machine": platform.machine(),
+        "processor": platform.processor(),
+        "python_version": platform.python_version()
+        
+    })
+    
     return device_info
 
 def export_to_json(data, output_file):
@@ -105,21 +140,7 @@ def export_to_xml(data, output_file):
     except Exception as e:
         print(f"Failed to export data to {output_file}: {e}")
 
-# Main function --------------------------------------------------------------
-
-
-def main():
-    args = get_args()
-
-    if args.debug:
-        debug_mode(args)
-
-    """if args.quiet:
-        print("Quiet mode is enabled. Suppressing output.")
-    else:
-        print("Collecting data...")
-        """
-    device_info = get_device_info()
+def output_to_file(args, device_info):
     if args.format == "json":
         if args.output:
             export_to_json(device_info, args.output)
@@ -132,6 +153,25 @@ def main():
             print("XML output to console is not supported.")
     else:
         print(f"Unsupported format: {args.format}. Supported formats are 'json' and 'xml'.")
+
+
+# Main function --------------------------------------------------------------
+
+
+def main():
+    args = get_args()
+
+    if args.debug:
+        debug_mode(args)
+
+    if args.extra:
+        device_info = get_device_info_extended()
+    else:
+        device_info = get_device_info()
+
+
+    output_to_file(args, device_info)
+
 
 # Run and Handle Exceptions --------------------------------------------------------------
 
