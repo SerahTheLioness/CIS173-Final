@@ -22,6 +22,54 @@ VERSION = "1.0.0-dev"
 # Defs --------------------------------------------------------------
 
 
+def get_args():
+    # Create the parser
+    parser = argparse.ArgumentParser(
+        description="Program to get information about a device via CLI and export it to a JSON file." \
+        "\n Created for the final project of Data Analysis with Python (CIS173) at Los Angeles Pierce College."
+    )
+
+    # Add arguments
+    parser.add_argument(
+        "-f", "--format",
+        type=str,
+        help="Output format (e.g., json, xml). Default is json.",
+        action="store",
+        default="json"
+    )
+    parser.add_argument(
+        "-o", "--output",
+        type=str,
+        action="store",
+        help="Where to output the data (e.g., filename or directory). By default prints to console.",
+        default=None
+    )
+    parser.add_argument(
+        "-v", "--version",
+        action="version",
+        help="Show program's version number and exit.",
+        version= VERSION
+    )
+    parser.add_argument(
+        "-d", "--debug",
+        action="store_true",
+        help="Enable debug mode."
+    )
+    parser.add_argument(
+        "positional_output",
+        nargs="?",
+        help="Positional argument for output file (alternative to -o/--output).",
+        default=None
+    )
+    
+    # Parse arguments   
+    args = parser.parse_args()
+    if args.positional_output and not args.output:
+        args.output = args.positional_output.strip()
+    if args.format is not None:
+        args.format = args.format.lower()
+    return args
+
 def debug_mode(args):
     print("Debug mode is enabled.")
     print(f"Arguments: {args}")
@@ -61,42 +109,29 @@ def export_to_xml(data, output_file):
 
 
 def main():
-    # Create the parser
-    parser = argparse.ArgumentParser(
-        description="Program to get information about a device via CLI and export it to a JSON file." \
-        "\n Created for the final project of Data Analysis with Python (CIS173) at Los Angeles Pierce College."
-    )
-
-    # Add arguments
-    parser.add_argument(
-        "-f", "--format",
-        type=str,
-        help="Output format (e.g., json, xml). Default is json.",
-        default="json"
-    )
-    parser.add_argument(
-        "-o", "--output",
-        type=str,
-        help="Where to output the data (e.g., filename or directory). Default is NONE (prints to console).",
-    )
-    parser.add_argument(
-        "-v", "--version",
-        action="version",
-        version= VERSION
-    )
-    parser.add_argument(
-        "-d", "--debug",
-        action="store_true",
-        help="Enable debug mode."
-    )
-
-    # Parse arguments
-    args = parser.parse_args()
+    args = get_args()
 
     if args.debug:
         debug_mode(args)
 
-    print("Getting device information...")
+    """if args.quiet:
+        print("Quiet mode is enabled. Suppressing output.")
+    else:
+        print("Collecting data...")
+        """
+    device_info = get_device_info()
+    if args.format == "json":
+        if args.output:
+            export_to_json(device_info, args.output)
+        else:
+            print(json.dumps(device_info, indent=4))
+    elif args.format == "xml":
+        if args.output:
+            export_to_xml(device_info, args.output)
+        else:
+            print("XML output to console is not supported.")
+    else:
+        print(f"Unsupported format: {args.format}. Supported formats are 'json' and 'xml'.")
 
 # Run and Handle Exceptions --------------------------------------------------------------
 
