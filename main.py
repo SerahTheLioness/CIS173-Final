@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """
 Program designed to get information about a device via CLI and export it to a JSON file.
-Author: Serah Leona Camacho
-License: BSD-3-Clause (see LICENSE.txt file for details)
+Author: Serah Camacho
+License: BSD-3-Clause (see LICENSE file for details)
 Version: 1.0.0-dev
 Usage: python main.py ### Add usage instructions here later ###
 """
 
 import argparse
+import json
+import platform
+import socket
 import sys
 
 def main():
@@ -33,7 +36,20 @@ def main():
     args = parser.parse_args()
     print(f"Format: {args.format}")
     print(f"Output file: {args.output}")
+
+    print("Getting device information...")
+    print(get_device_info())
+
     # add logic to get device information (os apis? cli calls?) and export to specified format (simple, or at least should be...)
+
+def get_device_info():
+    # gets basic device information
+    device_info = {
+        "device_name": platform.node(),
+        "os_version": platform.system() + " " + platform.release() + " " + platform.version(),
+        "ip_address": socket.gethostbyname(socket.gethostname())
+    }
+    return device_info
 
 if __name__ == "__main__":
     try:
