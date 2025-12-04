@@ -3,7 +3,7 @@
 Program designed to get information about a device via CLI and export it to a JSON file.
 Author: Serah Camacho
 License: BSD-3-Clause (see LICENSE file for details)
-Version: 1.1.0-dev
+Version: RC1-1.1.0
 Usage: python main.py ### Add usage instructions here later ###
 """
 
@@ -20,7 +20,7 @@ import time
 
 
 
-VERSION = "1.1.0-dev"
+VERSION = "RC1-1.1.0"
 
 # Args --------------------------------------------------------------
 
