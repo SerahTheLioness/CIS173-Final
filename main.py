@@ -95,7 +95,7 @@ def get_device_info():
         "timestamp_utc": time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()),
         "device_name": platform.node(),
         "os_version": platform.system() + " " + platform.release() + " " + platform.version(),
-        "ip_address": socket.gethostbyname(socket.gethostname())
+        "ip_address": socket.gethostbyname(socket.getfqdn())
     }
     return device_info
 
@@ -118,7 +118,7 @@ def get_device_info_extended():
         "python_version": platform.python_version()
         
     })
-    
+
     return device_info
 
 def export_to_json(data, output_file):
