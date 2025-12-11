@@ -18,7 +18,7 @@ BSD-3-Clause (see LICENSE file for details)
 
 Version
 -------
-RC2-1.2.0
+1.2.1
 
 Usage
 -----
@@ -53,7 +53,7 @@ import time
 
 
 
-VERSION = "RC2-1.2.0"
+VERSION = "1.2.1"
 
 # Args --------------------------------------------------------------
 
@@ -399,12 +399,15 @@ def export_to_jsonl(data, output_file, mode='a'):
     Appended entry to info.jsonl
     """
 
-    try:
-        with open(output_file, mode, encoding="utf-8") as f:
-            f.write(json.dumps(data) + "\n")
-        print(f"Appended entry to {output_file}")
-    except Exception as e:
-        print(f"Failed to export data: {e}")
+    if output_file:
+        try:
+            with open(output_file, mode, encoding="utf-8") as f:
+                f.write(json.dumps(data) + "\n")
+            print(f"Appended entry to {output_file}")
+        except Exception as e:
+            print(f"Failed to export data: {e}")
+    else:
+        print(json.dumps(data))
 
 def export_to_xml(data, output_file, mode):
     """
@@ -481,10 +484,7 @@ def output_to_file(args, device_info, mode='w'):
         else:
             print("XML output to console is not supported.")
     elif args.format == "jsonl":
-        if args.output:
             export_to_jsonl(device_info, args.output, mode)
-        else:
-            print("JSONL output to console is not supported.")
     else:
         # fallback, should never execute!
         print(f"Unsupported format: {args.format}. Supported formats are 'json', 'jsonl', and 'xml'.")
